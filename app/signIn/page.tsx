@@ -1,0 +1,107 @@
+"use client";
+import { Button } from "@/components/ui/button";
+import React from "react";
+import { Schema, z } from "zod";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useForm, SubmitHandler } from "react-hook-form";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Span } from "next/dist/trace";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const schema = z.object({
+  email: z.email(),
+  password: z.string().min(8, "Minimum 8 characters"),
+});
+
+type FormField = z.infer<typeof schema>;
+
+const signIn = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isSubmitted },
+  } = useForm<FormField>({
+    defaultValues: {
+      email: "shivargahv200701@gmail.com",
+    },
+    resolver: zodResolver(schema),
+  });
+
+  const onSubmit: SubmitHandler<FormField> = async (data) => {
+    await new Promise((resolve, reject) => {
+      setTimeout(resolve, 5000);
+    });
+    console.log(data);
+  };
+  return (
+    <div className="flex items-center justify-center h-screen">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle>Login to your account</CardTitle>
+          <CardDescription>
+            Enter your email below to login to your account
+          </CardDescription>
+          <CardAction>
+            <Button variant="link">Sign Up</Button>
+          </CardAction>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="email">Email</Label>
+                <Input placeholder="example@123" {...register("email")} />
+                {errors.email && (
+                  <span className="text-red-500 text-sm">
+                    {errors.email.message}
+                  </span>
+                )}
+              </div>
+              <div className="grid gap-2">
+                <div className="flex ">
+                  <Label htmlFor="Password">Password</Label>
+                  <a
+                    href="#"
+                    className="text-sm ml-auto inline-block underline-offset-4 hover:underline"
+                  >
+                    Forgot your password?
+                  </a>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <span className="text-red-500 text-sm">
+                    {errors.password.message}
+                  </span>
+                )}
+              </div>
+              <Button className="w-full" type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "submiting...." : "login"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+
+        <CardFooter className="flex-col gap-2">
+          <Button variant="outline" className="w-full">
+            Login with Google
+          </Button>
+        </CardFooter>
+      </Card>
+    </div>
+  );
+};
+
+export default signIn;
