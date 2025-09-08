@@ -5,11 +5,15 @@ import Link from "next/link";
 export default function Home() {
   return (
     <>
-      <h1>Hi how are you</h1>
-      <Button asChild>
-        <Link href="/signIn">Sign-in</Link>
-      </Button>
-      <></>
+      <div className="flex justify-center items-center h-screen gap-6">
+        <Button asChild>
+          <Link href="/signIn">Sign-in</Link>
+        </Button>
+
+        <Button asChild>
+          <Link href="/signUp">Sign-up</Link>
+        </Button>
+      </div>
     </>
   );
 }

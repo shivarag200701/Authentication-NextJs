@@ -1,8 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import React from "react";
-import { Schema, z } from "zod";
 import { Input } from "@/components/ui/input";
+import { z } from "zod";
 import { Label } from "@/components/ui/label";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {
@@ -14,26 +14,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Span } from "next/dist/trace";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signUpSchema } from "@/auth/nextjs/schemas";
 
-const schema = z.object({
-  email: z.email(),
-  password: z.string().min(8, "Minimum 8 characters"),
-});
-
-type FormField = z.infer<typeof schema>;
+type FormField = z.infer<typeof signUpSchema>;
 
 const signIn = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitting },
   } = useForm<FormField>({
     defaultValues: {
       email: "shivargahv200701@gmail.com",
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(signUpSchema),
   });
 
   const onSubmit: SubmitHandler<FormField> = async (data) => {
@@ -46,17 +41,28 @@ const signIn = () => {
     <div className="flex items-center justify-center h-screen">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Create a new Account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your details below to create an account
           </CardDescription>
           <CardAction>
-            <Button variant="link">Sign Up</Button>
+            <Button asChild variant="link">
+              <a href="/signIn">SignIn</a>
+            </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input {...register("name")} />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input placeholder="example@123" {...register("email")} />
