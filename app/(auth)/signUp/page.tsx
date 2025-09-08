@@ -16,10 +16,12 @@ import {
 } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "@/auth/nextjs/schemas";
+import { signUp } from "@/auth/nextjs/action";
+import { toast } from "sonner";
 
 type FormField = z.infer<typeof signUpSchema>;
 
-const signIn = () => {
+const signUpForm = () => {
   const {
     register,
     handleSubmit,
@@ -32,10 +34,12 @@ const signIn = () => {
   });
 
   const onSubmit: SubmitHandler<FormField> = async (data) => {
-    await new Promise((resolve, reject) => {
-      setTimeout(resolve, 5000);
-    });
-    console.log(data);
+    try {
+      await signUp(data);
+      toast.success("Account created Successfully");
+    } catch (error: any) {
+      toast.error(error.message);
+    }
   };
   return (
     <div className="flex items-center justify-center h-screen">
@@ -110,4 +114,4 @@ const signIn = () => {
   );
 };
 
-export default signIn;
+export default signUpForm;

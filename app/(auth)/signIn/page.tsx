@@ -33,7 +33,11 @@ const signInForm = () => {
   });
 
   const onSubmit: SubmitHandler<FormField> = async (data) => {
-    signIn(data);
+    try {
+      await signIn(data);
+    } catch (e) {
+      console.error("error:", e);
+    }
   };
   return (
     <div className="flex items-center justify-center h-screen">
