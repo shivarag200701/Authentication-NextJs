@@ -4,13 +4,19 @@ import { signInSchema, signUpSchema } from "./schemas";
 import { PrismaClient } from "@/generated/prisma";
 import crypto from "crypto";
 import { passwordHasher } from "../core/passwordHasher";
+import { createSession } from "../core/createUserSession";
+import { redirect } from "next/navigation";
 
 const prisma = new PrismaClient();
 
-export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
-  //   const allUsers = await prisma.user.findMany();
-  //   console.log(allUsers);
-}
+// export async function signIn(unsafeData: z.infer<typeof signInSchema>) {
+//     const {data, success} = signInSchema.safeParse(unsafeData)
+
+//     if(!success){
+//         return Error("Pass proper data")
+//     }
+//     const user =
+// }
 
 export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
   const { data, success } = signUpSchema.safeParse(unsafeData);
@@ -29,13 +35,13 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
     throw new Error("Email already taken");
   }
 
-  //password hashing
-  const salt = crypto.randomBytes(16).toString("hex");
-  const hashedPassword = await passwordHasher(data?.password, salt);
-
-  //Storing in database
   try {
-    await prisma.user.create({
+    //password hashing
+    const salt = crypto.randomBytes(16).toString("hex");
+    const hashedPassword = await passwordHasher(data?.password, salt);
+
+    //Storing in database
+    const newUser = await prisma.user.create({
       data: {
         email: data.email,
         name: data.name,
@@ -43,7 +49,11 @@ export async function signUp(unsafeData: z.infer<typeof signUpSchema>) {
         salt: salt,
       },
     });
+
+    const sessionId = await createSession(newUser.id);
   } catch (e) {
     console.error("error while saving data to database:", e);
   }
+
+  redirect("/");
 }
