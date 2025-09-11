@@ -15,29 +15,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "@/auth/nextjs/schemas";
-import { signIn } from "@/auth/nextjs/action";
+import { signUpSchema } from "@/auth/nextjs/schemas";
+import { signUp } from "@/auth/nextjs/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type FormField = z.infer<typeof signInSchema>;
+type FormField = z.infer<typeof signUpSchema>;
 
-const signInForm = () => {
+const SignUpForm = () => {
   const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitting },
   } = useForm<FormField>({
     defaultValues: {
       email: "shivargahv200701@gmail.com",
     },
-    resolver: zodResolver(signInSchema),
+    resolver: zodResolver(signUpSchema),
   });
+
   const onSubmit: SubmitHandler<FormField> = async (data) => {
     try {
-      await signIn(data);
-      toast.success("Logged in successfully");
+      await signUp(data);
+      toast.success("Account created Successfully");
       setTimeout(() => {
         router.push("/");
       }, 2000);
@@ -49,19 +50,28 @@ const signInForm = () => {
     <div className="flex items-center justify-center h-screen">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Create a new Account</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            Enter your details below to create an account
           </CardDescription>
           <CardAction>
             <Button asChild variant="link">
-              <a href="/signUp">Sign up</a>
+              <a href="/signIn">SignIn</a>
             </Button>
           </CardAction>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
+              <div className="grid gap-2">
+                <Label htmlFor="name">Name</Label>
+                <Input {...register("name")} />
+                {errors.name && (
+                  <span className="text-red-500 text-sm">
+                    {errors.name.message}
+                  </span>
+                )}
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input placeholder="example@123" {...register("email")} />
@@ -109,4 +119,4 @@ const signInForm = () => {
   );
 };
 
-export default signInForm;
+export default SignUpForm;
